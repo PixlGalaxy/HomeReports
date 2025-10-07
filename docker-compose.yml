@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  house-reports:
+    build: .
+    container_name: house-reports
+    ports:
+      - "80:80"
+    env_file: .env
+    volumes:
+      - ./backend/data:/app/data
+      - ./backend/uploads:/app/uploads
+    depends_on:
+      - ollama
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+
+volumes:
+  ollama_models:
