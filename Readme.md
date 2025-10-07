@@ -1,4 +1,4 @@
-# House Reports
+# HomeReports
 
 A full-stack web application that allows residents to submit and review house incident reports in real time.  
 Each report includes text and optional images, which are formalized by an **Ollama AI model** hosted externally.
