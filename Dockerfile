@@ -1,7 +1,7 @@
 
 # Build Frontend (React + Vite)
 
-FROM node:20-alpine AS frontend-build
+FROM node:24-alpine AS frontend-build
 WORKDIR /frontend
 COPY frontend/package*.json ./
 RUN npm install
@@ -20,7 +20,7 @@ COPY --from=frontend-build /frontend/dist /app/static
 
 # Final Image with Nginx + Backend
 
-FROM nginx:1.27-alpine
+FROM nginx:1.30-alpine
 
 # Copy Nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
@@ -31,8 +31,11 @@ COPY --from=frontend-build /frontend/dist /usr/share/nginx/html
 # Copy backend code and dependencies
 COPY --from=backend /app /app
 
-# Install Python runtime
-RUN apk add --no-cache python3 py3-pip && pip install fastapi uvicorn httpx pyyaml python-multipart
+# Install Python runtime (venv: Alpine's system Python refuses pip installs)
+RUN apk add --no-cache python3 \
+    && python3 -m venv /opt/venv \
+    && /opt/venv/bin/pip install --no-cache-dir -r /app/requirements.txt
+ENV PATH="/opt/venv/bin:$PATH"
 
 WORKDIR /app
 EXPOSE 80
